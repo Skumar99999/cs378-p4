@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon Information</title>
+</head>
+<body>
+    <h1>Pokémon Information</h1>
+    <input type="text" id="pokemonName" placeholder="Enter Pokémon Name">
+    <button onclick="searchPokemon()">Search</button>
+
+    <div id="pokemonDetails">
+        <!-- Pokemon details will be displayed here -->
+    </div>
+
+    <script>
+        function searchPokemon() {
+            var pokemonName = document.getElementById("pokemonName").value.toLowerCase();
+            var apiUrl = "https://pokeapi.co/api/v2/pokemon/" + pokemonName;
+
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Pokémon not found!");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    displayPokemon(data);
+                })
+                .catch(error => {
+                    document.getElementById("pokemonDetails").innerHTML = "<p>" + error + "</p>";
+                });
+        }
+
+        function displayPokemon(data) {
+            var pokemonDetails = document.getElementById("pokemonDetails");
+            pokemonDetails.innerHTML = `
+                <h2>${capitalize(data.name)}</h2>
+                <img src="${data.sprites.front_default}" alt="${data.name}">
+                <p>Type: ${capitalize(data.types[0].type.name)}</p>
+                <p>Abilities: ${data.abilities.map(ability => capitalize(ability.ability.name)).join(", ")}</p>
+            `;
+        }
+
+        function capitalize(s) {
+            return s.charAt(0).toUpperCase() + s.slice(1);
+        }
+    </script>
+</body>
+</html>
